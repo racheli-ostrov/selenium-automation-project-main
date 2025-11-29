@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+<suite name="LastPrice Automation Suite" parallel="false">
+    <test name="Full Tests">
+        <classes>
+            <class name="tests.CartFlowTest"/>
+            <class name="tests.RegistrationFormTest"/>
+            <class name="tests.DynamicContentChangeTest"/>
+            <class name="tests.AccessibilityTests"/>
+        </classes>
+    </test>
+</suite>
