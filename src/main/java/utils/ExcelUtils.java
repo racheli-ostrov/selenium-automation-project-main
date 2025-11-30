@@ -2,11 +2,17 @@ package utils;
 
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
 
 import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.File;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ExcelUtils {
 
@@ -82,5 +88,134 @@ public class ExcelUtils {
                 try { workbook.close(); } catch (Exception ignored) {}
             }
         }
+    }
+
+    // Class to hold detailed cart item info for Excel reporting
+    public static class CartItemReport {
+        public String searchQuery;
+        public String productName;
+        public boolean addedSuccessfully;
+        public String price;
+        public String quantity;
+        public String rowTotal;
+
+        public CartItemReport(String searchQuery, String productName, boolean addedSuccessfully, 
+                               String price, String quantity, String rowTotal) {
+            this.searchQuery = searchQuery;
+            this.productName = productName;
+            this.addedSuccessfully = addedSuccessfully;
+            this.price = price;
+            this.quantity = quantity;
+            this.rowTotal = rowTotal;
+        }
+    }
+
+    /**
+     * Writes comprehensive cart test report to Excel.
+     * Creates a new workbook each run with timestamp.
+     * @param path Output Excel file path
+     * @param items List of cart item reports
+     * @param cartTotal Total cart value
+     * @param testStatus Overall test status (PASS/FAIL)
+     */
+    public static void writeCartTestReport(String path, List<CartItemReport> items, 
+                                            String cartTotal, String testStatus) throws Exception {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        
+        // Create header style
+        XSSFCellStyle headerStyle = workbook.createCellStyle();
+        XSSFFont headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 12);
+        headerStyle.setFont(headerFont);
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        
+        // Create success/fail styles
+        XSSFCellStyle successStyle = workbook.createCellStyle();
+        successStyle.setFillForegroundColor(IndexedColors.LIGHT_GREEN.getIndex());
+        successStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        
+        XSSFCellStyle failStyle = workbook.createCellStyle();
+        failStyle.setFillForegroundColor(IndexedColors.CORAL.getIndex());
+        failStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        
+        // Main cart items sheet
+        Sheet itemsSheet = workbook.createSheet("Cart Items");
+        Row header = itemsSheet.createRow(0);
+        String[] headers = {"חיפוש (Search Query)", "שם מוצר (Product Name)", 
+                            "הוסף בהצלחה (Added Successfully)", "מחיר (Price)", 
+                            "כמות (Quantity)", "סה\"כ שורה (Row Total)"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = header.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+            itemsSheet.setColumnWidth(i, 5000);
+        }
+        
+        int rowIdx = 1;
+        for (CartItemReport item : items) {
+            Row r = itemsSheet.createRow(rowIdx++);
+            r.createCell(0).setCellValue(item.searchQuery);
+            r.createCell(1).setCellValue(item.productName);
+            
+            Cell statusCell = r.createCell(2);
+            statusCell.setCellValue(item.addedSuccessfully ? "✓ כן" : "✗ לא");
+            statusCell.setCellStyle(item.addedSuccessfully ? successStyle : failStyle);
+            
+            r.createCell(3).setCellValue(item.price);
+            r.createCell(4).setCellValue(item.quantity);
+            r.createCell(5).setCellValue(item.rowTotal);
+        }
+        
+        // Add total row
+        Row totalRow = itemsSheet.createRow(rowIdx + 1);
+        Cell totalLabelCell = totalRow.createCell(4);
+        totalLabelCell.setCellValue("סה\"כ עגלה (Cart Total):");
+        totalLabelCell.setCellStyle(headerStyle);
+        Cell totalValueCell = totalRow.createCell(5);
+        totalValueCell.setCellValue(cartTotal);
+        totalValueCell.setCellStyle(headerStyle);
+        
+        // Summary sheet
+        Sheet summarySheet = workbook.createSheet("Summary");
+        int summaryRow = 0;
+        
+        Row timeRow = summarySheet.createRow(summaryRow++);
+        timeRow.createCell(0).setCellValue("זמן הרצה (Run Time):");
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        timeRow.createCell(1).setCellValue(timestamp);
+        
+        Row statusRow = summarySheet.createRow(summaryRow++);
+        statusRow.createCell(0).setCellValue("סטטוס טסט (Test Status):");
+        Cell statusCell = statusRow.createCell(1);
+        statusCell.setCellValue(testStatus);
+        statusCell.setCellStyle(testStatus.contains("PASS") ? successStyle : failStyle);
+        
+        Row itemCountRow = summarySheet.createRow(summaryRow++);
+        itemCountRow.createCell(0).setCellValue("מספר פריטים (Items Count):");
+        itemCountRow.createCell(1).setCellValue(items.size());
+        
+        Row successCountRow = summarySheet.createRow(summaryRow++);
+        successCountRow.createCell(0).setCellValue("הוספות מוצלחות (Successful Adds):");
+        long successCount = items.stream().filter(i -> i.addedSuccessfully).count();
+        successCountRow.createCell(1).setCellValue(successCount);
+        
+        Row totalRow2 = summarySheet.createRow(summaryRow++);
+        totalRow2.createCell(0).setCellValue("סה\"כ עגלה (Cart Total):");
+        totalRow2.createCell(1).setCellValue(cartTotal);
+        
+        summarySheet.autoSizeColumn(0);
+        summarySheet.autoSizeColumn(1);
+        
+        // Write to file
+        File file = new File(path);
+        file.getParentFile().mkdirs();
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            workbook.write(fos);
+        }
+        workbook.close();
+        
+        System.out.println("📊 דוח Excel נשמר ב: " + path);
     }
 }

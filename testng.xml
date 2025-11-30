@@ -3,9 +3,9 @@
     <listeners>
         <listener class-name="tests.TestResultLogger"/>
     </listeners>
-    <test name="Contrast Only">
+    <test name="Simple Cart Test">
         <classes>
-            <class name="tests.AccessibilityTests"/>
+            <class name="tests.SimpleCartTest"/>
         </classes>
     </test>
 </suite>

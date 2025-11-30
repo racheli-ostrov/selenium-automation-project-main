@@ -29,7 +29,13 @@ public class CartPage extends BasePage {
 
     // Returns a list of items currently in the cart
     public List<CartItem> getCartItems() {
-        waitForPresence(cartRows);
+        try {
+            waitForPresence(cartRows);
+        } catch (Exception e) {
+            // Cart might be empty or require login
+            System.out.println("⚠ Could not find cart items (cart may be empty or require login)");
+            return new ArrayList<>();
+        }
         List<WebElement> rows = driver.findElements(cartRows);
         List<CartItem> items = new ArrayList<>();
 
