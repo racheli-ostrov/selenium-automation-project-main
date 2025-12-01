@@ -8,4 +8,14 @@
             <class name="tests.SimpleCartTest"/>
         </classes>
     </test>
+    <test name="Registration Form Test">
+        <classes>
+            <class name="tests.RegistrationFormTest"/>
+        </classes>
+    </test>
+    <test name="LastPrice Registration Test">
+        <classes>
+            <class name="tests.LastPriceRegistrationTest"/>
+        </classes>
+    </test>
 </suite>
