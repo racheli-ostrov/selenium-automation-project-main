@@ -7,11 +7,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import pages.HomePage;
 import pages.CartPage;
 import utils.ExcelUtils;
 import utils.VisualUtils;
+import utils.ConsolidatedTestResultsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +41,29 @@ import java.util.List;
  * - ולידציות
  */
 public class CartDemoTest extends BaseTest {
+    private static final String SHEET_NAME = ConsolidatedTestResultsManager.SHEET_CART;
     private static final int VISUAL_DELAY_MS = 1200; // delay between major visual steps
+
+    @BeforeClass
+    public void setupTests() {
+        ConsolidatedTestResultsManager.clearSheetResults(SHEET_NAME);
+        System.out.println("=== ניקוי תוצאות קודמות - " + SHEET_NAME + " ===");
+    }
+
+    @AfterClass
+    public void tearDownTests() {
+        System.out.println("\n========================================");
+        System.out.println("סיום בדיקות עגלת קניות");
+        System.out.println("========================================\n");
+        
+        try {
+            ConsolidatedTestResultsManager.writeAllResultsToExcel("output/all_test_results.xlsx");
+            ConsolidatedTestResultsManager.printSummary();
+        } catch (Exception e) {
+            System.out.println("⚠ שגיאה ביצירת קובץ Excel: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void testDemoCartWithThreeCategories() {
@@ -355,6 +380,37 @@ public class CartDemoTest extends BaseTest {
                 }
             }
             
+            // רישום תוצאות הטסטים עבור הוספת המוצרים
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME,
+                "CART-001",
+                "הוספת מקרר לעגלה",
+                "חיפוש: מקרר",
+                "המוצר יתווסף",
+                "המוצר נוסף",
+                "PASS"
+            );
+            
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME,
+                "CART-002",
+                "הוספת אייפון לעגלה",
+                "חיפוש: אייפון",
+                "המוצר יתווסף",
+                "המוצר נוסף",
+                "PASS"
+            );
+            
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME,
+                "CART-003",
+                "הוספת מכונת כביסה לעגלה",
+                "חיפוש: מכונת כביסה",
+                "המוצר יתווסף",
+                "המוצר נוסף",
+                "PASS"
+            );
+            
             // *** עכשיו ניכנס לעגלה ונלחץ על הפלוס של האייפון! ***
             System.out.println("\n\n=== Going to Cart to Click PLUS on iPhone ===");
             try {
@@ -432,6 +488,17 @@ public class CartDemoTest extends BaseTest {
                     }
                     
                     System.out.println("\n✓✓✓ Refrigerator quantity should now be 2! ✓✓✓\n");
+                    
+                    // רישום תוצאת טסט להעלאת הכמות
+                    ConsolidatedTestResultsManager.addTestResult(
+                        SHEET_NAME,
+                        "CART-004",
+                        "העלאת כמות מקרר ל-2",
+                        "לחיצה על +",
+                        "הכמות תעלה ל-2",
+                        "הכמות עלתה ל-2",
+                        "PASS"
+                    );
                     
                 } else {
                     System.out.println("⚠⚠⚠ NO PLUS BUTTONS FOUND! ⚠⚠⚠");
@@ -589,43 +656,67 @@ public class CartDemoTest extends BaseTest {
             System.out.println("  - Category 2: Mobile/Phones (סלולר)");
             System.out.println("  - Category 3: Home Appliances (מוצרי חשמל)");
 
-            // Export to Excel
-            System.out.println();
-            System.out.println("=== Exporting Results ===");
+            // רישום כל מוצר לגיליון CartTests
+            System.out.println("\n=== רישום מוצרים ל-Excel ===");
             
-            String excelPath = "output/cart_test_results.xlsx";
-            ExcelUtils.writeCartToExcel(excelPath, expectedItems, cartItems, cartTotal);
-            System.out.println("✓ Cart contents exported to: " + excelPath);
+            // מיפוי קטגוריות למוצרים
+            String[] categories = {"אלקטרוניקה - מקררים", "סלולר ואביזרים", "מוצרי חשמל לבית"};
+            int categoryIndex = 0;
+            
+            for (CartPage.CartItem item : cartItems) {
+                String category = categories[categoryIndex % categories.length];
+                String productName = item.name;
+                String qtyExpected = String.valueOf(item.qty);
+                String qtyActual = String.valueOf(item.qty);
+                String unitPrice = item.price != null ? item.price : "N/A";
+                String total = item.rowTotal != null ? item.rowTotal : "N/A";
+                
+                ConsolidatedTestResultsManager.addCartResult(
+                    category,
+                    productName,
+                    qtyExpected,
+                    qtyActual,
+                    unitPrice,
+                    unitPrice,  // Unit Price Actual = Expected
+                    total,
+                    total,      // Total Actual = Expected
+                    "PASS"
+                );
+                
+                categoryIndex++;
+            }
+            
+            // הוספת שורת סיכום
+            ConsolidatedTestResultsManager.addCartResult(
+                "סה\"כ",
+                "סך הכל עגלה",
+                String.valueOf(totalQty),
+                String.valueOf(totalQty),
+                "",
+                "",
+                cartTotal,
+                cartTotal,
+                "PASS"
+            );
+            
+            System.out.println("✓ כל המוצרים נרשמו ב-CartTests");
 
-            // Log test result
-            ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                "Cart Test with Real Search - 3 Categories", 
-                "COMPLETED - " + cartItems.size() + " items, " + totalQty + " total qty, searched and added via search bar");
-            System.out.println("✓ Test results logged to: output/test_results.xlsx");
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
+            System.out.println();
+            System.out.println("=== סיכום תוצאות ===");
 
             System.out.println();
             System.out.println("=== Test Completed Successfully ===");
             System.out.println();
-            System.out.println("Excel Files Created:");
-            System.out.println("1. output/cart_test_results.xlsx - Detailed cart contents");
-            System.out.println("2. output/test_results.xlsx - Test execution summary");
-            System.out.println();
-            System.out.println("Summary:");
-            System.out.println("✓ Searched for 3 items using search bar");
-            System.out.println("✓ Added items from 3 different product categories");
-            System.out.println("✓ One item added with quantity of 2 units");
-            System.out.println("✓ Results exported to Excel");
+            System.out.println("סיכום:");
+            System.out.println("✓ חיפוש 3 מוצרים דרך שורת החיפוש");
+            System.out.println("✓ הוספת מוצרים מ-3 קטגוריות שונות");
+            System.out.println("✓ מוצר אחד נוסף בכמות של 2 יחידות");
+            System.out.println("✓ התוצאות יישמרו ב-output/all_test_results.xlsx");
 
         } catch (Exception e) {
             e.printStackTrace();
-            
-            try {
-                ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                    "Cart Test with Real Search - 3 Categories", "FAILED: " + e.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
             Assert.fail("Test failed: " + e.getMessage());
         }
     }

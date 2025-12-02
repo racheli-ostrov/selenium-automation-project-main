@@ -59,7 +59,7 @@
         <version>3.1.2</version>
         <configuration>
           <suiteXmlFiles>
-            <suiteXmlFile>testng.xml</suiteXmlFile>
+            <suiteXmlFile>testng-consolidated.xml</suiteXmlFile>
           </suiteXmlFiles>
         </configuration>
       </plugin>

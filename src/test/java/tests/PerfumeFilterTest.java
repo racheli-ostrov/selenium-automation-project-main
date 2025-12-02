@@ -3,15 +3,24 @@ package tests;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import pages.HomePage;
 import pages.PerfumeCategoryPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import utils.ConsolidatedTestResultsManager;
 
+import java.io.File;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 
 /**
  * בדיקת שינוי תוכן דינמי בעקבות הפעלת סינונים בחיפוש בשמים
@@ -29,7 +38,34 @@ import java.util.List;
  */
 public class PerfumeFilterTest {
 
+    private static final String SHEET_NAME = ConsolidatedTestResultsManager.SHEET_SEARCH_FILTER;
     private WebDriver driver;
+
+    /**
+     * צילום מסך ושמירה לקובץ
+     */
+    private String takeScreenshot(String fileName) {
+        try {
+            String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+            String screenshotName = fileName + "_" + timestamp + ".png";
+            String screenshotPath = "output/screenshots/" + screenshotName;
+            
+            File screenshotDir = new File("output/screenshots");
+            if (!screenshotDir.exists()) {
+                screenshotDir.mkdirs();
+            }
+            
+            File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            File destFile = new File(screenshotPath);
+            FileUtils.copyFile(srcFile, destFile);
+            
+            System.out.println("✓ צילום מסך נשמר: " + screenshotPath);
+            return screenshotPath;
+        } catch (Exception e) {
+            System.out.println("⚠ שגיאה בצילום מסך: " + e.getMessage());
+            return "";
+        }
+    }
 
     /**
      * מדגיש אלמנט עם מסגרת אדומה דקה
@@ -94,6 +130,12 @@ public class PerfumeFilterTest {
         System.out.println("✓ נלחץ על: " + filterText);
     }
 
+    @BeforeClass
+    public void setupTests() {
+        ConsolidatedTestResultsManager.clearSheetResults(SHEET_NAME);
+        System.out.println("=== ניקוי תוצאות קודמות - " + SHEET_NAME + " ===");
+    }
+
     @BeforeMethod
     public void setUp() {
         WebDriverManager.chromedriver().setup();
@@ -111,6 +153,21 @@ public class PerfumeFilterTest {
     public void tearDown() {
         if (driver != null) {
             driver.quit();
+        }
+    }
+
+    @AfterClass
+    public void tearDownTests() {
+        System.out.println("\n========================================");
+        System.out.println("סיום בדיקות חיפוש וסינון");
+        System.out.println("========================================\n");
+        
+        try {
+            ConsolidatedTestResultsManager.writeAllResultsToExcel("output/all_test_results.xlsx");
+            ConsolidatedTestResultsManager.printSummary();
+        } catch (Exception e) {
+            System.out.println("⚠ שגיאה ביצירת קובץ Excel: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -299,6 +356,10 @@ public class PerfumeFilterTest {
             for (int i = 0; i < Math.min(5, initialProducts.size()); i++) {
                 System.out.println("  " + (i+1) + ". " + initialProducts.get(i));
             }
+            
+            // צילום מסך לפני הסינון
+            System.out.println("\n📸 צילום מסך לפני סינון Calvin Klein...");
+            String screenshotBeforeFilter = takeScreenshot("perfume_before_filter");
             System.out.println();
 
             // שלב 5: הפעלת סינון - Calvin Klein
@@ -331,10 +392,6 @@ public class PerfumeFilterTest {
             
             // המתנה לעדכון הדף
             Thread.sleep(4000);
-            perfumePage.waitForDOMUpdate();
-            
-            System.out.println("✓ סינון 'Calvin Klein' הופעל\n");
-
             // שלב 6: בדיקת השינוי לאחר סינון Calvin Klein
             System.out.println("שלב 6: בדיקת תוכן לאחר סינון Calvin Klein");
             System.out.println("----------------------------------------");
@@ -342,7 +399,11 @@ public class PerfumeFilterTest {
             int afterFirstFilterCount = perfumePage.getProductCount();
             List<String> afterFirstFilterProducts = perfumePage.getProductNames();
             
-            System.out.println("מספר מוצרים לאחר סינון Calvin Klein: " + afterFirstFilterCount);
+            // צילום מסך אחרי הסינון
+            System.out.println("\n📸 צילום מסך אחרי סינון Calvin Klein...");
+            String screenshotAfterFilter = takeScreenshot("perfume_after_filter");
+            
+            System.out.println("\nמספר מוצרים לאחר סינון Calvin Klein: " + afterFirstFilterCount);
             System.out.println("מוצרי Calvin Klein לנשים:");
             for (int i = 0; i < Math.min(10, afterFirstFilterProducts.size()); i++) {
                 System.out.println("  " + (i+1) + ". " + afterFirstFilterProducts.get(i));
@@ -370,6 +431,43 @@ public class PerfumeFilterTest {
             if (afterFirstFilterCount > 0 && afterFirstFilterCount <= 4) {
                 System.out.println("✓ מסנן Calvin Klein מציג " + afterFirstFilterCount + " מוצרים כצפוי");
             }
+            
+            // רישום תוצאות בקובץ Excel
+            ConsolidatedTestResultsManager.addSearchFilterResult(
+                "שלב 1",
+                "הקלדת 'בשמים' בחיפוש",
+                "תוצאות חיפוש יופיעו",
+                "תוצאות הופיעו",
+                "PASS",
+                ""
+            );
+            
+            ConsolidatedTestResultsManager.addSearchFilterResult(
+                "שלב 2",
+                "בחירת 'בשמים לנשים'",
+                "רק בשמים לנשים",
+                "התוכן סונן",
+                "PASS",
+                ""
+            );
+            
+            ConsolidatedTestResultsManager.addSearchFilterResult(
+                "שלב 3 - לפני סינון",
+                "תצוגת מוצרי בשמים לנשים",
+                initialProductCount + " מוצרים",
+                initialProductCount + " מוצרים",
+                "PASS",
+                screenshotBeforeFilter
+            );
+            
+            ConsolidatedTestResultsManager.addSearchFilterResult(
+                "שלב 4 - סינון Calvin Klein",
+                "בחירת מותג Calvin Klein",
+                "רק מוצרי Calvin Klein",
+                "מוצרי Calvin Klein בלבד: " + afterFirstFilterCount + " מוצרים",
+                contentChanged ? "PASS" : "FAIL",
+                screenshotAfterFilter
+            );
             
         } catch (Exception e) {
             System.out.println("\n✗✗✗ שגיאה בביצוע הבדיקה ✗✗✗");

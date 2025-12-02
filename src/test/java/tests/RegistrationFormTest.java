@@ -3,7 +3,7 @@ package tests;
 import org.openqa.selenium.*;
 import org.testng.annotations.*;
 import pages.RegistrationPage;
-import utils.TestResultsExcelWriter;
+import utils.ConsolidatedTestResultsManager;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -11,11 +11,12 @@ import java.util.*;
 public class RegistrationFormTest extends BaseTest {
     
     private String uniqueEmail;
+    private static final String SHEET_NAME = ConsolidatedTestResultsManager.SHEET_REGISTRATION;
 
     @BeforeClass
     public void setupTests() {
-        TestResultsExcelWriter.clearResults();
-        System.out.println("=== ניקוי תוצאות קודמות ===");
+        ConsolidatedTestResultsManager.clearSheetResults(SHEET_NAME);
+        System.out.println("=== ניקוי תוצאות קודמות - " + SHEET_NAME + " ===");
         
         // יצירת אימייל ייחודי
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
@@ -62,9 +63,17 @@ public class RegistrationFormTest extends BaseTest {
         try {
             reg.fillFormFields(testData);
             System.out.println("\n✓ הטופס מולא בהצלחה!");
-            TestResultsExcelWriter.addTestResult("מילוי שדות", true, "כל 12 השדות + 2 צ'קבוקסים מולאו");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-001-A", "מילוי שדות הרשמה",
+                "12 שדות + 2 צ'קבוקסים", "כל השדות מולאו", "כל 12 השדות + 2 צ'קבוקסים מולאו",
+                "PASS"
+            );
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("מילוי שדות", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-001-A", "מילוי שדות הרשמה",
+                "12 שדות + 2 צ'קבוקסים", "כל השדות מולאו", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -102,17 +111,30 @@ public class RegistrationFormTest extends BaseTest {
             }
             System.out.println("✓ לחץ על כפתור ההרשמה");
             
-            TestResultsExcelWriter.addTestResult("לחיצה על כפתור", true, "בוצעה בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-001-B", "לחיצה על כפתור הרשמה",
+                "לחיצה על Submit", "הכפתור נלחץ", "לחיצה בוצעה בהצלחה",
+                "PASS"
+            );
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("לחיצה על כפתור", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-001-B", "לחיצה על כפתור הרשמה",
+                "לחיצה על Submit", "הכפתור נלחץ", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
         System.out.println("\nהמתן 5 שניות...");
         Thread.sleep(5000);
         
-        TestResultsExcelWriter.addTestResult("טסט 1: הרשמה מוצלחת", true, "ההרשמה הושלמה בהצלחה");
+        ConsolidatedTestResultsManager.addTestResult(
+            SHEET_NAME, "REG-001", "הרשמה מוצלחת עם כל הפרטים",
+            "אימייל=" + uniqueEmail + ", סיסמה, שם, כתובת, טלפון",
+            "ההרשמה תתבצע בהצלחה", "ההרשמה הושלמה בהצלחה",
+            "PASS"
+        );
         
         System.out.println("\n=== טסט 1 הסתיים בהצלחה ===");
     }
@@ -164,9 +186,19 @@ public class RegistrationFormTest extends BaseTest {
         try {
             reg.fillFormFields(testData);
             System.out.println("\n✓ הטופס מולא");
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם אימייל קיים", true, "הטופס מולא עם פרטים שונים ואימייל קיים");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-002-A", "מילוי טופס עם אימייל קיים",
+                "אימייל=" + uniqueEmail + " (קיים), פרטים אחרים שונים",
+                "הטופס מולא", "הטופס מולא עם פרטים שונים ואימייל קיים",
+                "PASS"
+            );
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם אימייל קיים", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-002-A", "מילוי טופס עם אימייל קיים",
+                "אימייל=" + uniqueEmail + " (קיים), פרטים אחרים שונים",
+                "הטופס מולא", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -188,10 +220,18 @@ public class RegistrationFormTest extends BaseTest {
             }
             System.out.println("✓ לחץ על כפתור ההרשמה");
             
-            TestResultsExcelWriter.addTestResult("לחיצה על כפתור", true, "בוצעה בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-002-B", "לחיצה על כפתור עם אימייל כפול",
+                "לחיצה על Submit עם אימייל קיים", "הכפתור נלחץ", "לחיצה בוצעה בהצלחה",
+                "PASS"
+            );
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("לחיצה על כפתור", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-002-B", "לחיצה על כפתור עם אימייל כפול",
+                "לחיצה על Submit עם אימייל קיים", "הכפתור נלחץ", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -225,10 +265,11 @@ public class RegistrationFormTest extends BaseTest {
             // אם מצאנו שגיאה - זה PASS! כי המערכת מנעה רישום כפול
             if (errorFound) {
                 System.out.println("\n✓ הבדיקה עברה בהצלחה - המערכת מנעה רישום כפול!");
-                TestResultsExcelWriter.addTestResult(
-                    "בדיקת אימייל כפול", 
-                    true, 
-                    "✓ המערכת זיהתה אימייל קיים והציגה שגיאה: \"" + errorText + "\" - הבדיקה עברה בהצלחה!"
+                ConsolidatedTestResultsManager.addTestResult(
+                    SHEET_NAME, "REG-002", "בדיקת אימייל כפול",
+                    "אימייל=" + uniqueEmail + " (קיים), פרטים אחרים שונים",
+                    "המערכת תמנע רישום כפול", "המערכת הציגה שגיאה: " + errorText,
+                    "PASS"
                 );
             } else {
                 // אם לא מצאנו שגיאה - זה בעיה! המשמעות היא שהמערכת אפשרה רישום כפול
@@ -240,22 +281,28 @@ public class RegistrationFormTest extends BaseTest {
                 
                 if (pageSource.contains("כבר קיים") || pageSource.contains("רשום") || pageSource.contains("exist")) {
                     System.out.println("✓ נמצאה אינדיקציה להודעת שגיאה בקוד הדף");
-                    TestResultsExcelWriter.addTestResult(
-                        "בדיקת אימייל כפול", 
-                        true, 
-                        "✓ המערכת מנעה רישום כפול (זוהה אינדיקציה בדף) - הבדיקה עברה!"
+                    ConsolidatedTestResultsManager.addTestResult(
+                        SHEET_NAME, "REG-002", "בדיקת אימייל כפול",
+                        "אימייל=" + uniqueEmail + " (קיים), פרטים אחרים שונים",
+                        "המערכת תמנע רישום כפול", "זוהה אינדיקציה בדף - רישום כפול נמנע",
+                        "PASS"
                     );
                 } else {
-                    TestResultsExcelWriter.addTestResult(
-                        "בדיקת אימייל כפול", 
-                        false, 
-                        "✗ לא נמצאה הודעת שגיאה - המערכת אפשרה רישום כפול!"
+                    ConsolidatedTestResultsManager.addTestResult(
+                        SHEET_NAME, "REG-002", "בדיקת אימייל כפול",
+                        "אימייל=" + uniqueEmail + " (קיים), פרטים אחרים שונים",
+                        "המערכת תמנע רישום כפול", "המערכת אפשרה רישום כפול",
+                        "FAIL"
                     );
                 }
             }
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("בדיקת אימייל כפול", false, "שגיאה בביצוע הבדיקה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-002", "בדיקת אימייל כפול",
+                "אימייל=" + uniqueEmail + " (קיים)", "המערכת תמנע רישום כפול", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
         }
         
         System.out.println("\n=== טסט 2 הסתיים ===");
@@ -308,9 +355,17 @@ public class RegistrationFormTest extends BaseTest {
         try {
             reg.fillFormFields(testData);
             System.out.println("\n✓ הטופס מולא (עם שדות חובה ריקים)");
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם שדות חסרים", true, "הטופס מולא בלי אימייל וסיסמה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-003-A", "מילוי טופס עם שדות חסרים",
+                "אימייל וסיסמה ריקים, שאר השדות מלאים", "הטופס מולא", "הטופס מולא בלי אימייל וסיסמה",
+                "PASS"
+            );
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם שדות חסרים", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-003-A", "מילוי טופס עם שדות חסרים",
+                "אימייל וסיסמה ריקים", "הטופס מולא", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -332,10 +387,18 @@ public class RegistrationFormTest extends BaseTest {
             }
             System.out.println("✓ לחץ על כפתור ההרשמה");
             
-            TestResultsExcelWriter.addTestResult("ניסיון שליחה עם שדות חסרים", true, "לחיצה בוצעה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-003-B", "ניסיון שליחה עם שדות חסרים",
+                "לחיצה על Submit עם שדות חובה ריקים", "הכפתור נלחץ", "לחיצה בוצעה",
+                "PASS"
+            );
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("ניסיון שליחה עם שדות חסרים", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-003-B", "ניסיון שליחה עם שדות חסרים",
+                "לחיצה על Submit עם שדות חובה ריקים", "הכפתור נלחץ", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -394,22 +457,28 @@ public class RegistrationFormTest extends BaseTest {
             // תוצאה סופית
             if (validationPassed) {
                 System.out.println("\n✓ הבדיקה עברה בהצלחה - המערכת מנעה שליחה עם שדות חובה חסרים!");
-                TestResultsExcelWriter.addTestResult(
-                    "אימות שדות חובה", 
-                    true, 
-                    "✓ המערכת מנעה שליחת טופס עם שדות חובה חסרים: \"" + validationMessage + "\" - הבדיקה עברה!"
+                ConsolidatedTestResultsManager.addTestResult(
+                    SHEET_NAME, "REG-003", "אימות שדות חובה",
+                    "אימייל וסיסמה ריקים, ניסיון שליחה",
+                    "המערכת תמנע שליחה", "המערכת מנעה שליחה: " + validationMessage,
+                    "PASS"
                 );
             } else {
                 System.out.println("\n⚠ לא זוהה מניעת שליחה - המערכת אפשרה שליחה עם שדות חסרים (בעיה!)");
-                TestResultsExcelWriter.addTestResult(
-                    "אימות שדות חובה", 
-                    false, 
-                    "✗ המערכת לא מנעה שליחה עם שדות חובה חסרים!"
+                ConsolidatedTestResultsManager.addTestResult(
+                    SHEET_NAME, "REG-003", "אימות שדות חובה",
+                    "אימייל וסיסמה ריקים, ניסיון שליחה",
+                    "המערכת תמנע שליחה", "המערכת אפשרה שליחה עם שדות חסרים",
+                    "FAIL"
                 );
             }
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("אימות שדות חובה", false, "שגיאה בביצוע הבדיקה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-003", "אימות שדות חובה",
+                "אימייל וסיסמה ריקים", "המערכת תמנע שליחה", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
         }
         
         System.out.println("\n=== טסט 3 הסתיים ===");
@@ -473,9 +542,17 @@ public class RegistrationFormTest extends BaseTest {
         try {
             reg.fillFormFields(testData);
             System.out.println("\n✓ הטופס מולא (עם טלפון שני לא תקין)");
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם טלפון שני לא תקין", true, "הטופס מולא עם אותיות בשדה טלפון השני");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-004-A", "מילוי טופס עם טלפון שני לא תקין",
+                "טלפון נייד תקין, טלפון נוסף=ABC1234567", "הטופס מולא", "הטופס מולא עם אותיות בטלפון השני",
+                "PASS"
+            );
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("מילוי טופס עם טלפון שני לא תקין", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-004-A", "מילוי טופס עם טלפון שני לא תקין",
+                "טלפון נוסף=ABC1234567", "הטופס מולא", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -497,10 +574,18 @@ public class RegistrationFormTest extends BaseTest {
             }
             System.out.println("✓ לחץ על כפתור ההרשמה");
             
-            TestResultsExcelWriter.addTestResult("ניסיון שליחה עם טלפון שני לא תקין", true, "לחיצה בוצעה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-004-B", "ניסיון שליחה עם טלפון שני לא תקין",
+                "לחיצה על Submit עם טלפון נוסף לא תקין", "הכפתור נלחץ", "לחיצה בוצעה",
+                "PASS"
+            );
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("ניסיון שליחה עם טלפון שני לא תקין", false, "שגיאה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-004-B", "ניסיון שליחה עם טלפון שני לא תקין",
+                "לחיצה על Submit עם טלפון נוסף לא תקין", "הכפתור נלחץ", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
             throw e;
         }
         
@@ -574,22 +659,28 @@ public class RegistrationFormTest extends BaseTest {
             // תוצאה סופית
             if (validationPassed) {
                 System.out.println("\n✓ הבדיקה עברה בהצלחה - המערכת מנעה שליחה עם טלפון שני לא תקין!");
-                TestResultsExcelWriter.addTestResult(
-                    "אימות טלפון שני לא תקין", 
-                    true, 
-                    "✓ המערכת מנעה שליחת טופס עם טלפון שני המכיל אותיות: \"" + validationMessage + "\" - הבדיקה עברה!"
+                ConsolidatedTestResultsManager.addTestResult(
+                    SHEET_NAME, "REG-004", "אימות טלפון שני לא תקין",
+                    "טלפון נוסף=ABC1234567, ניסיון שליחה",
+                    "המערכת תמנע שליחה", "המערכת מנעה שליחה: " + validationMessage,
+                    "PASS"
                 );
             } else {
                 System.out.println("\n⚠ לא זוהה מניעת שליחה - המערכת אפשרה שליחה עם טלפון שני לא תקין (בעיה!)");
-                TestResultsExcelWriter.addTestResult(
-                    "אימות טלפון שני לא תקין", 
-                    false, 
-                    "✗ המערכת לא מנעה שליחה עם טלפון שני המכיל אותיות!"
+                ConsolidatedTestResultsManager.addTestResult(
+                    SHEET_NAME, "REG-004", "אימות טלפון שני לא תקין",
+                    "טלפון נוסף=ABC1234567, ניסיון שליחה",
+                    "המערכת תמנע שליחה", "המערכת אפשרה שליחה עם טלפון לא תקין",
+                    "FAIL"
                 );
             }
             
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("אימות טלפון שני לא תקין", false, "שגיאה בביצוע הבדיקה: " + e.getMessage());
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, "REG-004", "אימות טלפון שני לא תקין",
+                "טלפון נוסף=ABC1234567", "המערכת תמנע שליחה", "שגיאה: " + e.getMessage(),
+                "FAIL"
+            );
         }
         
         System.out.println("\n=== טסט 4 הסתיים ===");
@@ -601,14 +692,11 @@ public class RegistrationFormTest extends BaseTest {
         System.out.println("סיום כל הבדיקות");
         System.out.println("========================================\n");
         
-        TestResultsExcelWriter.printSummary();
-        
-        String excelPath = "output/registeration_validation_results.xlsx";
         try {
-            TestResultsExcelWriter.writeResultsToExcel(excelPath);
-            System.out.println("\n✓ התוצאות נשמרו בהצלחה: " + excelPath);
+            ConsolidatedTestResultsManager.writeAllResultsToExcel("output/all_test_results.xlsx");
+            ConsolidatedTestResultsManager.printSummary();
         } catch (Exception e) {
-            System.out.println("שגיאה בשמירת Excel: " + e.getMessage());
+            System.out.println("שגיאה בשמירת תוצאות: " + e.getMessage());
         }
     }
     
@@ -621,9 +709,17 @@ public class RegistrationFormTest extends BaseTest {
             driver.get(homeUrl);
             Thread.sleep(3000);
             
-            TestResultsExcelWriter.addTestResult("כניסה לעמוד הבית", true, "נפתח בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-01", "כניסה לעמוד הבית",
+                "ניווט ל-" + homeUrl, "העמוד נפתח", "נפתח בהצלחה",
+                "PASS"
+            );
         } catch (Exception e) {
-            TestResultsExcelWriter.addTestResult("כניסה לעמוד הבית", false, "שגיאה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-01", "כניסה לעמוד הבית",
+                "ניווט ל-" + homeUrl, "העמוד נפתח", "שגיאה",
+                "FAIL"
+            );
             throw e;
         }
         
@@ -649,7 +745,11 @@ public class RegistrationFormTest extends BaseTest {
             );
             Thread.sleep(2000);
             
-            TestResultsExcelWriter.addTestResult("מציאת אזור התחבר/הרשם", true, "נמצא בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-02", "מציאת אזור התחבר/הרשם",
+                "חיפוש תפריט התחבר/הרשם", "האזור נמצא", "נמצא בהצלחה",
+                "PASS"
+            );
             
             System.out.println("\nלוחץ על אזור התחבר/הרשם...");
             try {
@@ -660,7 +760,11 @@ public class RegistrationFormTest extends BaseTest {
             Thread.sleep(2000);
             System.out.println("✓ התפריט נפתח");
             
-            TestResultsExcelWriter.addTestResult("פתיחת תפריט", true, "נפתח בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-03", "פתיחת תפריט",
+                "לחיצה על התחבר/הרשם", "התפריט נפתח", "נפתח בהצלחה",
+                "PASS"
+            );
             
             registerButton = driver.findElement(By.xpath("//a[@href='Register' or contains(@href, 'Register')]"));
             System.out.println("נמצא קישור הרשמה: '" + registerButton.getText() + "'");
@@ -678,7 +782,11 @@ public class RegistrationFormTest extends BaseTest {
             );
             Thread.sleep(3000);
             
-            TestResultsExcelWriter.addTestResult("מציאת כפתור הרשמה", true, "נמצא בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-04", "מציאת כפתור הרשמה",
+                "חיפוש קישור Register", "הכפתור נמצא", "נמצא בהצלחה",
+                "PASS"
+            );
             
             System.out.println("\nלוחץ על כפתור הרשמה...");
             try {
@@ -689,11 +797,19 @@ public class RegistrationFormTest extends BaseTest {
             Thread.sleep(3000);
             System.out.println("✓ לחץ על כפתור הרשמה");
             
-            TestResultsExcelWriter.addTestResult("לחיצה על כפתור הרשמה", true, "בוצעה בהצלחה");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-05", "לחיצה על כפתור הרשמה",
+                "לחיצה על קישור Register", "מעבר לדף הרשמה", "בוצעה בהצלחה",
+                "PASS"
+            );
             
         } catch (Exception e) {
             System.out.println("שגיאה בניווט דרך תפריט: " + e.getMessage());
-            TestResultsExcelWriter.addTestResult("ניווט דרך תפריט", false, "עובר ישירות");
+            ConsolidatedTestResultsManager.addTestResult(
+                SHEET_NAME, testPrefix + "-NAV-05", "ניווט דרך תפריט",
+                "ניווט לדף הרשמה דרך תפריט", "מעבר לדף הרשמה", "עובר ישירות",
+                "FAIL"
+            );
             driver.get("https://www.lastprice.co.il/Register");
             Thread.sleep(3000);
         }
@@ -713,6 +829,10 @@ public class RegistrationFormTest extends BaseTest {
             System.out.println("✓ ניווט ישיר לדף הרשמה אחרי התנתקות");
         }
         
-        TestResultsExcelWriter.addTestResult("הגעה לטופס", true, "הגיע בהצלחה");
+        ConsolidatedTestResultsManager.addTestResult(
+            SHEET_NAME, testPrefix + "-NAV-06", "הגעה לטופס",
+            "אימות הגעה לדף הרשמה", "הגיע לטופס הרשמה", "הגיע בהצלחה",
+            "PASS"
+        );
     }
 }

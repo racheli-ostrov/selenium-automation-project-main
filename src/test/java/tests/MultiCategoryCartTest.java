@@ -176,30 +176,13 @@ public class MultiCategoryCartTest extends BaseTest {
                 "Cart total should not be empty");
             System.out.println("✓ Validation 4 Passed: Cart total is calculated: " + cartTotal);
 
-            // שמירת תוצאות לאקסל
-            System.out.println("\nStep 6: Saving results to Excel");
-            String excelPath = "output/cart_test_results.xlsx";
-            // Using same list for expected and actual since we're documenting what was found
-            ExcelUtils.writeCartToExcel(excelPath, cartItems, cartItems, cartTotal);
-            System.out.println("✓ Cart contents saved to: " + excelPath);
-
-            // תיעוד הצלחת הטסט
-            ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                "Multi-Category Cart Test", "PASSED");
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
+            System.out.println("\nStep 6: Test completed");
 
             System.out.println("\n=== Test Completed Successfully ===");
 
         } catch (Exception e) {
             e.printStackTrace();
-            
-            // תיעוד כשלון הטסט
-            try {
-                ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                    "Multi-Category Cart Test", "FAILED: " + e.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            
             Assert.fail("Test failed with exception: " + e.getMessage());
         }
     }

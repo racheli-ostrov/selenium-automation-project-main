@@ -251,27 +251,12 @@ public class ExternalShopRedirectTest extends BaseTest {
                 System.out.println("⚠️ שגיאה כללית בקריאת עגלה: " + e.getMessage());
             }
             
-            // כתיבת דוח Excel
-            try {
-                String excelPath = "output/cart_test_report.xlsx";
-                ExcelUtils.writeCartTestReport(excelPath, cartReports, cartTotal, testStatus);
-                System.out.println("\n✅ דוח Excel נשמר בהצלחה: " + excelPath);
-            } catch (Exception e) {
-                System.out.println("⚠️ שגיאה בשמירת דוח Excel: " + e.getMessage());
-                e.printStackTrace();
-            }
-
-            System.out.println("\n=== סיום תהליך הדגמה ====");
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
+            System.out.println("\nסיום תהליך הדגמה");
         } catch (Exception e) {
             testStatus = "FAIL";
             e.printStackTrace();
-            // נסיון לשמור דוח גם במקרה של כשל
-            try {
-                String excelPath = "output/cart_test_report.xlsx";
-                ExcelUtils.writeCartTestReport(excelPath, cartReports, "0", testStatus);
-            } catch (Exception ex) {
-                System.out.println("⚠️ לא ניתן לשמור דוח Excel לאחר כשל");
-            }
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
             Assert.fail("התרחשה שגיאה: " + e.getMessage());
         }
     }

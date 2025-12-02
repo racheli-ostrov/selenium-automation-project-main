@@ -1,58 +1,12 @@
-================ Test Run @ 2025-12-01 19:02:52 ================
-Suite start: Registration Form Test
-START | test1_SuccessfulRegistration
-PASS  | test1_SuccessfulRegistration (58116 ms)
-START | test2_DuplicateEmailRegistration
-PASS  | test2_DuplicateEmailRegistration (180890 ms)
-START | test3_RequiredFieldsValidation
-FAIL  | test3_RequiredFieldsValidation (3202 ms)
-       Reason: invalid session id
-Build info: version: '4.11.0', revision: '040bc5406b'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
-Driver info: org.openqa.selenium.chrome.ChromeDriver
-Command: [146bed45efdd5dfb49aff8ae78a718fd, deleteAllCookies {}]
-Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 142.0.7444.176, chrome: {chromedriverVersion: 142.0.7444.175 (302067f14a4..., userDataDir: C:\Users\THEUSE~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:53216}, goog:processID: 30580, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:53216/devtoo..., se:cdpVersion: 142.0.7444.176, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
-Session ID: 146bed45efdd5dfb49aff8ae78a718fd
-START | test4_InvalidPhoneValidation
-FAIL  | test4_InvalidPhoneValidation (4 ms)
-       Reason: invalid session id
-Build info: version: '4.11.0', revision: '040bc5406b'
-System info: os.name: 'Windows 11', os.arch: 'amd64', os.version: '10.0', java.version: '24.0.2'
-Driver info: org.openqa.selenium.chrome.ChromeDriver
-Command: [146bed45efdd5dfb49aff8ae78a718fd, deleteAllCookies {}]
-Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 142.0.7444.176, chrome: {chromedriverVersion: 142.0.7444.175 (302067f14a4..., userDataDir: C:\Users\THEUSE~1\AppData\L...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:53216}, goog:processID: 30580, networkConnectionEnabled: false, pageLoadStrategy: normal, platformName: windows, proxy: Proxy(), se:cdp: ws://localhost:53216/devtoo..., se:cdpVersion: 142.0.7444.176, setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
-Session ID: 146bed45efdd5dfb49aff8ae78a718fd
-Suite finish: Registration Form Test (254813 ms)
-
-Summary: passed=2, failed=2, skipped=0
-================ End Run ================
-
-
-================ Test Run @ 2025-12-01 22:41:25 ================
+================ Test Run @ 2025-12-03 00:52:53 ================
 Suite start: Surefire test
 START | testDarkContrast
-PASS  | testDarkContrast (11917 ms)
+PASS  | testDarkContrast (13089 ms)
 START | testLightContrast
-PASS  | testLightContrast (10542 ms)
-Suite finish: Surefire test (42693 ms)
+PASS  | testLightContrast (11920 ms)
+Suite finish: Surefire test (39071 ms)
 
 Summary: passed=2, failed=0, skipped=0
-================ End Run ================
-
-
-================ Test Run @ 2025-12-02 10:52:59 ================
-Suite start: Registration Form Test
-START | test1_SuccessfulRegistration
-PASS  | test1_SuccessfulRegistration (147646 ms)
-START | test2_DuplicateEmailRegistration
-PASS  | test2_DuplicateEmailRegistration (58205 ms)
-START | test3_RequiredFieldsValidation
-PASS  | test3_RequiredFieldsValidation (53739 ms)
-START | test4_InvalidPhoneValidation
-PASS  | test4_InvalidPhoneValidation (61472 ms)
-Suite finish: Registration Form Test (336531 ms)
-
-Summary: passed=4, failed=0, skipped=0
 ================ End Run ================
 
 

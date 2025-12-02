@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
-import utils.ExcelUtils;
 
 public class TestResultLogger implements ITestListener {
     private BufferedWriter writer;
@@ -39,16 +38,7 @@ public class TestResultLogger implements ITestListener {
     @Override
     public void onStart(ITestContext context) {
         suiteStart = System.currentTimeMillis();
-        // Clear Excel file at start of each suite run
-        try {
-            File excelFile = new File("output/test-results.xlsx");
-            if(excelFile.exists()) {
-                excelFile.delete();
-                System.out.println("=== Cleared previous test-results.xlsx");
-            }
-        } catch (Exception e) {
-            System.out.println("=== Failed to clear Excel: " + e.getMessage());
-        }
+        // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
         initIfNeeded();
         writeLine("Suite start: " + context.getName());
     }
@@ -72,14 +62,7 @@ public class TestResultLogger implements ITestListener {
     public void onTestSuccess(ITestResult result) {
         passed.incrementAndGet();
         writeLine("PASS  | " + result.getMethod().getMethodName() + timing(result));
-        try { 
-            System.out.println("=== Writing PASS to Excel for: " + result.getMethod().getMethodName());
-            ExcelUtils.appendTestResult("output/test-results.xlsx", result.getMethod().getMethodName(), "PASS"); 
-            System.out.println("=== Excel write completed");
-        } catch (Exception e) { 
-            System.out.println("=== Excel write failed: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
     }
 
     @Override
@@ -89,14 +72,14 @@ public class TestResultLogger implements ITestListener {
         if (result.getThrowable() != null) {
             writeLine("       Reason: " + result.getThrowable().getMessage());
         }
-        try { ExcelUtils.appendTestResult("output/test-results.xlsx", result.getMethod().getMethodName(), "FAIL"); } catch (Exception ignored) {}
+        // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
     }
 
     @Override
     public void onTestSkipped(ITestResult result) {
         skipped.incrementAndGet();
         writeLine("SKIP  | " + result.getMethod().getMethodName() + timing(result));
-        try { ExcelUtils.appendTestResult("output/test-results.xlsx", result.getMethod().getMethodName(), "SKIP"); } catch (Exception ignored) {}
+        // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
     }
 
     @Override

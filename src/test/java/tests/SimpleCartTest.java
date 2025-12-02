@@ -130,12 +130,8 @@ public class SimpleCartTest extends BaseTest {
             System.out.println("Total Products Found: " + foundProducts.size());
             System.out.println("Total Items Count: " + totalQuantity);
 
-            // Save to Excel
-            System.out.println("\n=== Saving Results to Excel ===");
-            String excelPath = "output/cart_test_results.xlsx";
-            // Using same list for expected and actual since we're just documenting what was found
-            ExcelUtils.writeCartToExcel(excelPath, foundProducts, foundProducts, "N/A - Price Comparison Site");
-            System.out.println("✓ Product search results saved to: " + excelPath);
+            // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
+            System.out.println("\n=== Test Results ===");
 
             // Validations
             System.out.println("\n=== Validations ===");
@@ -179,33 +175,17 @@ public class SimpleCartTest extends BaseTest {
                     System.out.println("⚠ Validation 4: No price information found");
                 }
 
-                // Log test success
-                ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                    "LastPrice Product Search Test", 
-                    "PASSED - " + foundProducts.size() + " products found, " + totalQuantity + " total qty");
+                // התוצאות יישמרו ב-all_test_results.xlsx דרך ConsolidatedTestResultsManager
             } else {
                 System.out.println("⚠ Validations failed: No products were found");
-                ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                    "LastPrice Product Search Test", 
-                    "FAILED - No products found");
                 Assert.fail("No products were found during the search");
             }
 
             System.out.println("\n=== Test Completed Successfully ===");
-            System.out.println("Check 'output/cart_test_results.xlsx' for detailed product information");
-            System.out.println("Check 'output/test_results.xlsx' for test results summary");
+            System.out.println("התוצאות יישמרו ב-output/all_test_results.xlsx");
 
         } catch (Exception e) {
             e.printStackTrace();
-            
-            // Log failure
-            try {
-                ExcelUtils.appendTestResult("output/test_results.xlsx", 
-                    "LastPrice Product Search Test", "FAILED: " + e.getMessage());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            
             System.out.println("\n=== Test Failed ===");
             System.out.println("Error: " + e.getMessage());
             Assert.fail("Test failed with exception: " + e.getMessage());
