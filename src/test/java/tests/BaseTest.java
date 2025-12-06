@@ -6,6 +6,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import utils.ConsolidatedTestResultsManager;
 
 import java.time.Duration;
 
@@ -35,6 +36,15 @@ public class BaseTest {
 
     @AfterClass
     public void tearDown() {
+        // כתיבת כל התוצאות לקובץ Excel לפני סגירת הדפדפן
+        try {
+            ConsolidatedTestResultsManager.writeAllResultsToExcel("output/all_test_results.xlsx");
+            System.out.println("✓✓✓ קובץ Excel נוצר בהצלחה: output/all_test_results.xlsx ✓✓✓");
+        } catch (Exception e) {
+            System.out.println("⚠ שגיאה בכתיבת קובץ Excel: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
         if (driver != null) {
             driver.quit();
         }
